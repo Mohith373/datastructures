@@ -1,54 +1,60 @@
+
 #include<stdio.h>
 #include<ctype.h>
-int stack[20];
+char stack[20];
 int top = -1;
-void push(int x)
+void push(char x)
 {
 stack[++top] = x;
 }
-int pop()
+char pop()
 {
+if(top == -1)
+return -1;
+else
 return stack[top--];
 }
-int main()
+int priority(char x)
+{
+if(x == '^')
+return 3;
+else if(x == '*' || x == '/')
+return 2;
+else if(x == '+' || x == '-')
+return 1;
+
+else
+return 0;
+}
+main()
 {
 char exp[20];
-char *e;
-int n1,n2,n3,num;
+char *e, x;
 printf("Enter the expression :: ");
 scanf("%s",exp);
 e = exp;
 while(*e != '\0')
 {
-if(isdigit(*e))
+if(isalnum(*e))
+printf("%c",*e);
+else if(*e == '(')
+push(*e);
+else if(*e == ')')
 {
-num = *e - 48;
-push(num);
+while((x = pop()) != '(')
+printf("%c", x);
 }
 else
 {
-n1 = pop();
-n2 = pop();
-switch(*e)
-{
-case '+':
-n3 = n1 + n2;
-break;
-case '-':
-n3 = n2 - n1;
+while(priority(stack[top]) >= priority(*e))
+printf("%c",pop());
 
-break;
-case '*':
-n3 = n1 * n2;
-break;
-case '/':
-n3 = n2 / n1;
-break;
-}
-push(n3);
+push(*e);
 }
 e++;
 }
-printf("\nThe result of expression %s = %d\n\n",exp,pop());
-return 0;
+while(top != -1)
+{
+printf("%c",pop());
+}
 }
